@@ -62,6 +62,7 @@ const QuestionList = ({ formData, onCreateLink }) => {
         },
       ])
       .select();
+    console.log(`supabase: error - `, error);
 
     // update user credits
 

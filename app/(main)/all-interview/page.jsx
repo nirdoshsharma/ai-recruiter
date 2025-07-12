@@ -19,7 +19,7 @@ const AllInterview = () => {
       .select("*")
       .eq("userEmail", user?.email)
       .order("id", { ascending: false });
-
+    console.log(`supabase: error - `, error);
     console.log(Interviews);
     setinterviewList(Interviews);
   };

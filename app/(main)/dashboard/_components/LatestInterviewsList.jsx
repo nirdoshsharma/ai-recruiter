@@ -20,6 +20,7 @@ const LatestInterviewsList = () => {
       .eq("userEmail", user?.email)
       .order("id", { ascending: false })
       .limit(6);
+    console.log(`supabase: error - `, error);
     console.log(Interviews);
     setinterviewList(Interviews);
   };
