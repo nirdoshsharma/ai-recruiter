@@ -1,15 +1,40 @@
 "use client"; // important for using hooks in app router
 
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { supabase } from "./services/supabaseClient";
 
 export default function Home() {
   const router = useRouter();
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    // Get the current session on mount
+    const getSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (data?.session) {
+        setSession(data.session);
+      }
+    };
+
+    getSession();
+
+    // Listen for auth state changes
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+      }
+    );
+
+    // Cleanup subscription
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
 
   const handleNavigate = () => {
-    router.push("/dashboard"); // adjust the path based on your routing
+    router.push("/dashboard");
   };
 
   const signInWithGoogle = async () => {
@@ -25,8 +50,12 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
       <h1 className="text-3xl font-bold">Ai - Recruiter</h1>
-      <Button onClick={signInWithGoogle}>Login With Google</Button>
-      <Button onClick={handleNavigate}>Go to Dashboard</Button>
+
+      {!session ? (
+        <Button onClick={signInWithGoogle}>Login With Google</Button>
+      ) : (
+        <Button onClick={handleNavigate}>Go to Dashboard</Button>
+      )}
     </div>
   );
 }
